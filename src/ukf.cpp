@@ -100,6 +100,62 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   Complete this function! Make sure you switch between lidar and radar
   measurements.
   */
+  
+  /*****************************************************************************
+   *  Initialization
+   ****************************************************************************/
+  if (!is_initialized_) {
+    if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+      // Convert radar from polar to cartesian coordinates and initialize state.
+      float rho     = meas_package.raw_measurements_[0];
+      float phi     = meas_package.raw_measurements_[1];
+      float rho_dot = meas_package.raw_measurements_[2];
+
+      //angle normalization
+      while (phi >  M_PI) phi -= 2. * M_PI;
+      while (phi < -M_PI) phi += 2. * M_PI;
+
+      // Init State [pos1 pos2 vel_abs yaw_angle yaw_rate]
+      x_ << rho * cos(phi), rho * sin(phi), 0, 0, 0;
+    }
+    else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+      //set the state with the initial location and zero velocity
+      float px = meas_package.raw_measurements_[0];
+      float py = meas_package.raw_measurements_[1];
+
+		  // Init State [pos1 pos2 vel_abs yaw_angle yaw_rate]
+      x_ << px, py, 0, 0, 0;
+    }
+
+    time_us_ = meas_package.timestamp_;
+    
+    // done initializing, no need to predict or update
+    is_initialized_ = true;
+  }
+
+  /*****************************************************************************
+   *  Prediction
+   ****************************************************************************/
+  //compute the time elapsed between the current and previous measurements
+	float dt = (meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
+	time_us_ = meas_package.timestamp_;
+
+  Prediction(dt);
+
+  /*****************************************************************************
+   *  Update
+   ****************************************************************************/
+  if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    UpdateRadar(meas_package);
+  } else {
+    UpdateLidar(meas_package);
+  }
+
+  /*****************************************************************************
+   *  Print
+   ****************************************************************************/
+  cout << "x_ = " << x_ << endl;
+  cout << "P_ = " << P_ << endl;
 }
 
 /**
