@@ -83,7 +83,8 @@ UKF::UKF() {
   
   // Weights to calculate State Mean
   weights_ = VectorXd(2 * n_aug_ + 1);
-  weights_.fill(0.0);
+  weights_.fill(1       / (2 * (lambda_ + n_aug_)));
+  weights_(0) = lambda_ /      (lambda_ + n_aug_);
 }
 
 UKF::~UKF() {}
