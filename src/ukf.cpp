@@ -153,10 +153,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   }
 
   /*****************************************************************************
-   *  Print
+   *  Print outputs
    ****************************************************************************/
-  cout << "x_ = " << x_ << endl;
-  cout << "P_ = " << P_ << endl;
+  //cout << "x_ = " << x_ << endl;
+  //cout << "P_ = " << P_ << endl;
 }
 
 /**
