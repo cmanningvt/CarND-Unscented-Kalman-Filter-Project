@@ -54,6 +54,36 @@ UKF::UKF() {
 
   Hint: one or more values initialized above might be wildly off...
   */
+
+  // Uninitialized state
+  is_initialized_ = false;
+
+  // Number of dimensions in State [pos1 pos2 vel_abs yaw_angle yaw_rate]
+  n_x_ = 5;
+
+  // Fill "Neutral" state vector
+  x_.fill(0.0);
+
+  //Initial Covariance Matrix
+  P_ << 1, 0, 0, 0, 0,
+	  0, 1, 0, 0, 0,
+	  0, 0, 1, 0, 0,
+	  0, 0, 0, 1, 0,
+	  0, 0, 0, 0, 1;
+
+  // Augmented state: [ State position_noise acc_noise]
+  n_aug_ = 7;
+
+  // Sigma point spreading paramter
+  lambda_ = 3 - n_aug_;
+
+  //Matrix for Predicted Sigma Points
+  Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1); // [5, 15]
+  Xsig_pred_.fill(0.0);
+  
+  // Weights to calculate State Mean
+  weights_ = VectorXd(2 * n_aug_ + 1);
+  weights_.fill(0.0);
 }
 
 UKF::~UKF() {}
