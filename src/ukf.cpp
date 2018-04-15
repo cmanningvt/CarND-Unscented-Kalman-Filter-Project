@@ -102,7 +102,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       // Convert radar from polar to cartesian coordinates and initialize state.
       float rho     = meas_package.raw_measurements_[0];
       float phi     = meas_package.raw_measurements_[1];
-      float rho_dot = meas_package.raw_measurements_[2];
 
       //angle normalization
       while (phi >  M_PI) phi -= 2. * M_PI;
@@ -282,11 +281,6 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
     // extract values for better readibility
     double p_x = Xsig_pred_(0,i);
     double p_y = Xsig_pred_(1,i);
-    double v   = Xsig_pred_(2,i);
-    double yaw = Xsig_pred_(3,i);
-
-    double v1  = cos(yaw)*v;
-    double v2  = sin(yaw)*v;
 
     // measurement model
     Zsig(0,i) = p_x;                        //py
